@@ -1,5 +1,60 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import re
+
+
+def plot(eunosat_matrix):
+    """ Plot EUNOSAT data """
+
+    plt.imshow(eunosat_matrix)
+    plt.colorbar()
+    plt.title('Plot for chorofyl distribution')
+    plt.show()
+
+
+def create_eunosat_matrix(fname):
+    """ Creates EUNOSAT 2-dimensional array from file """
+
+    eunosat_file = open(fname, "r")
+    scene_raster_width_txt = eunosat_file.readline()
+    scene_raster_width = 0
+
+    if scene_raster_width_txt.find("#sceneRasterWidth=") == -1:
+        print("Eunosat file in wrong format. Exiting")
+        exit()
+    else:
+        print("Eunosat file in right format. Parsing")
+        scene_raster_width = re.findall(r'\d+', scene_raster_width_txt)
+        scene_raster_width = int(scene_raster_width[0])
+
+    # read unused line
+    eunosat_file.readline()
+
+    # fill up numpy array
+    eunosat_data = np.zeros([14720])
+    index = 0
+    for line in eunosat_file.readlines():
+        line = re.sub('^\d+', '', line)
+        eunosat_data[index] = np.fromstring(line, dtype=float, sep='\t')
+        index += 1
+    eunosat_file.close()
+
+    # fill up numpy matrix
+    eunosat_matrix = np.zeros([93, scene_raster_width])
+    index = 0
+    for value in eunosat_data:
+        if value == 99999.0:
+            value = 0
+        eunosat_matrix[index/scene_raster_width, index%scene_raster_width] = value
+        index += 1
+
+    return eunosat_matrix
+
+
 def main():
-    print('Hello World.')
+    eunosat_matrix = create_eunosat_matrix("EUNOSAT_BZC_DINEOF_v2_20010525.csv")
+    plot(eunosat_matrix)
+    exit()
 
 
 if __name__ == '__main__':
