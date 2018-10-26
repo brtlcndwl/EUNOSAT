@@ -52,7 +52,7 @@ def create_eunosat_matrix(fname):
 
 
 def main():
-    eunosat_matrix = create_eunosat_matrix("EUNOSAT_BZC_DINEOF_v2_20010525.csv")
+    eunosat_matrix = create_eunosat_matrix("EUNOSAT_data/EUNOSAT_BZC_DINEOF_v2_20010525.csv")
     plot(eunosat_matrix)
     exit()
 
