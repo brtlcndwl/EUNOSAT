@@ -1,59 +1,72 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import re
+from datetime import date
 
 
-def plot(eunosat_matrix):
-    """ Plot EUNOSAT data """
+class eunosat_data:
+    """ Simple EUNOSAT data object """
 
-    plt.imshow(eunosat_matrix)
-    plt.colorbar()
-    plt.title('Plot for chorofyl distribution')
-    plt.show()
+    def __init__(self):
+        self.date = date.today()
+        self.data = np.zeros([93, 160])
+        self.scene_raster_width = 160
 
+    def set_datetime(self, date):
+        self.date = date
 
-def create_eunosat_matrix(fname):
-    """ Creates EUNOSAT 2-dimensional array from file """
+    def set_datetime_from_filename(self, filename):
+        """ Creates datetime object from filename """
+        filename = re.sub('\D', '', filename)
+        self.date = self.date.replace(year  =int(filename[1:5]))
+        self.date = self.date.replace(month =int(filename[5:7]))
+        self.date = self.date.replace(day   =int(filename[7:9]))
 
-    eunosat_file = open(fname, "r")
-    scene_raster_width_txt = eunosat_file.readline()
-    scene_raster_width = 0
+    def set_data(self, data):
+        self.data = data
 
-    if scene_raster_width_txt.find("#sceneRasterWidth=") == -1:
-        print("Eunosat file in wrong format. Exiting")
-        exit()
-    else:
-        print("Eunosat file in right format. Parsing")
-        scene_raster_width = re.findall(r'\d+', scene_raster_width_txt)
-        scene_raster_width = int(scene_raster_width[0])
+    def set_data_from_file(self, filename):
+        """ Creates EUNOSAT 2-dimensional array from file """
+        file = open(filename, "r")
+        scene_raster_width_txt = file.readline()
 
-    # read unused line
-    eunosat_file.readline()
+        if scene_raster_width_txt.find("#sceneRasterWidth=") == -1:
+            print("Eunosat file in wrong format. Exiting")
+            exit()
+        else:
+            print("Eunosat file in right format. Parsing")
+            scene_raster_width = re.findall(r'\d+', scene_raster_width_txt)
+            self.scene_raster_width = int(scene_raster_width[0])
 
-    # fill up numpy array
-    eunosat_data = np.zeros([14720])
-    index = 0
-    for line in eunosat_file.readlines():
-        line = re.sub('^\d+', '', line)
-        eunosat_data[index] = np.fromstring(line, dtype=float, sep='\t')
-        index += 1
-    eunosat_file.close()
+        # read unused line
+        file.readline()
 
-    # fill up numpy matrix
-    eunosat_matrix = np.zeros([93, scene_raster_width])
-    index = 0
-    for value in eunosat_data:
-        if value == 99999.0:
-            value = 0
-        eunosat_matrix[index/scene_raster_width, index%scene_raster_width] = value
-        index += 1
+        # fill up numpy array
+        self.data = np.zeros([93, self.scene_raster_width])
+        index = 0
+        for line in file.readlines():
+            line  = re.sub('^\d+', '', line)
+            value = np.fromstring(line, dtype=float, sep='\t')
+            value = 0 if value == 99999.0 else value
+            self.data[index/self.scene_raster_width, index % self.scene_raster_width] = value
+            index += 1
 
-    return eunosat_matrix
+        file.close()
+
+    def plot_data(self):
+        """ Plots EUNOSAT data from the 2-dim dataset """
+        plt.imshow(self.data)
+        plt.colorbar()
+        plt.title('Chlorophyll Distribution')
+        plt.show()
 
 
 def main():
-    eunosat_matrix = create_eunosat_matrix("EUNOSAT_data/EUNOSAT_BZC_DINEOF_v2_20010525.csv")
-    plot(eunosat_matrix)
+    filename    = 'EUNOSAT_data/EUNOSAT_BZC_DINEOF_v2_20010525.csv'
+    eunosatdata = eunosat_data()
+    eunosatdata.set_datetime_from_filename(filename)
+    eunosatdata.set_data_from_file(filename)
+    eunosatdata.plot_data()
     exit()
 
 
