@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import csv
 import re
 from datetime import date
 
@@ -12,10 +13,10 @@ class eunosat_data:
         self.data = np.zeros([93, 160])
         self.scene_raster_width = 160
 
-    def set_datetime(self, date):
+    def set_date(self, date):
         self.date = date
 
-    def set_datetime_from_filename(self, filename):
+    def set_date_from_filename(self, filename):
         """ Creates datetime object from filename """
         filename = re.sub('\D', '', filename)
         self.date = self.date.replace(year  =int(filename[1:5]))
@@ -25,33 +26,19 @@ class eunosat_data:
     def set_data(self, data):
         self.data = data
 
-    def set_data_from_file(self, filename):
+    def set_data_from_csv_file(self, filename):
         """ Creates EUNOSAT 2-dimensional array from file """
-        file = open(filename, "r")
-        scene_raster_width_txt = file.readline()
-
-        if scene_raster_width_txt.find("#sceneRasterWidth=") == -1:
-            print("Eunosat file in wrong format. Exiting")
-            exit()
-        else:
-            print("Eunosat file in right format. Parsing")
-            scene_raster_width = re.findall(r'\d+', scene_raster_width_txt)
-            self.scene_raster_width = int(scene_raster_width[0])
-
-        # read unused line
-        file.readline()
-
-        # fill up numpy array
         self.data = np.zeros([93, self.scene_raster_width])
-        index = 0
-        for line in file.readlines():
-            line  = re.sub('^\d+', '', line)
-            value = np.fromstring(line, dtype=float, sep='\t')
-            value = 0 if value == 99999.0 else value
-            self.data[index/self.scene_raster_width, index % self.scene_raster_width] = value
-            index += 1
-
-        file.close()
+        with open(filename) as csvfile:
+            reader = csv.reader(csvfile, delimiter=',')
+            row_index = 0
+            for row in reader:
+                column_index = 0
+                for value in row:
+                    value = 0 if value == 'NaN' else value
+                    self.data[92-column_index, row_index] = value
+                    column_index += 1
+                row_index += 1
 
     def plot_data(self):
         """ Plots EUNOSAT data from the 2-dim dataset """
@@ -62,10 +49,10 @@ class eunosat_data:
 
 
 def main():
-    filename    = 'EUNOSAT_data/EUNOSAT_BZC_DINEOF_v2_20010525.csv'
+    filename    = 'EUNOSAT_data/EUNOSAT_BZC_DINEOF_v2_20010623.csv'
     eunosatdata = eunosat_data()
-    eunosatdata.set_datetime_from_filename(filename)
-    eunosatdata.set_data_from_file(filename)
+    eunosatdata.set_date_from_filename(filename)
+    eunosatdata.set_data_from_csv_file(filename)
     eunosatdata.plot_data()
     exit()
 
