@@ -69,12 +69,23 @@ def get_edulis_spm_data(filename):
     return edulis_spm_data
 
 
+def get_deb_model_constants(filename):
+    deb_constants = {}
+    with open(filename) as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        for row in reader:
+            deb_constants[str(row[0])] = row[1]
+    return deb_constants
+
 def main():
     # Get EDULIS temperature data
     edulis_temperature_list = get_edulis_temperature_data('EDULIS_temperature_data.csv')
 
     # Get EDULIS solid particle matter data
     edulis_spm_list = get_edulis_spm_data('EDULIS_SPM_data.csv')
+
+    # Get DEB model constants
+    deb_constants = get_deb_model_constants('DEB_model_constants.csv')
 
     # Get EUNOSAT chrolophyll data
     eunosat_data_list = []

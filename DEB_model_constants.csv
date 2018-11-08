@@ -1,0 +1,19 @@
+half saturated food constant (ug/l),1.29
+maximum surface specific ingestion rate (ug.d-1),273
+assimilation efficiency (0-1),0.75
+volume specific maintenance cost (J.d-1cm-3),27.6
+maximum reserve density (J),2190
+cost for growth (J.cm-3),1900
+kappa (0-1),0.45
+volume at puberty (cm3),0.06
+reproduction efficiency (0-1),0.90
+arrhenius temperature (°K),5800
+optimal temperature (°K),289
+temperature low boundary optimal range (°K),282
+temperature high boundary optimal range (°K),296
+arrhenius temperature below optimal range (°K),60430
+arrhenius temperature above optimal range (°K),31376
+energy content of 1g of reserve (J),17550
+wet weight to dry weight (0-1),0.2
+proportion of the reproduction buffer emptied at each spawn (0-1),0.9
+gonodosomatic index needed to spawn (0-1),0.4
