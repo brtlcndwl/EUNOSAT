@@ -49,20 +49,32 @@ class eunosatData:
         plt.show()
 
 
-def get_edulis_site_temperature_data(filename):
+def get_edulis_temperature_data(filename):
     """ Get temperatures (per day, already interpolated) from temperature csv file and returns list """
-    edulis_site_temperatures = []
+    edulis_temperatures = []
     with open(filename) as csvfile:
         reader = csv.reader(csvfile, delimiter='\t')
         for row in reader:
-            edulis_site_temperatures.append(float(row[1]))
-    return edulis_site_temperatures
+            edulis_temperatures.append(float(row[1]))
+    return edulis_temperatures
+
+
+def get_edulis_spm_data(filename):
+    """ Get SPM (per day, not interpolated) from SPM csv file and returns list """
+    edulis_spm_data = []
+    with open(filename) as csvfile:
+        reader = csv.reader(csvfile, delimiter='\t')
+        for row in reader:
+            edulis_spm_data.append([int(row[0]), float(row[1])])
+    return edulis_spm_data
 
 
 def main():
     # Get EDULIS temperature data
-    edulis_temperature_list = get_edulis_site_temperature_data('EDULIS_site_temperature.csv')
-    print edulis_temperature_list
+    edulis_temperature_list = get_edulis_temperature_data('EDULIS_site_temperature.csv')
+
+    # Get EDULIS solid particle matter data
+    edulis_spm_list = get_edulis_spm_data('EDULIS_SPM_data.csv')
 
     # Get EUNOSAT chrolophyll data
     eunosat_data_list = []
