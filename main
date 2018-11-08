@@ -71,7 +71,7 @@ def get_edulis_spm_data(filename):
 
 def main():
     # Get EDULIS temperature data
-    edulis_temperature_list = get_edulis_temperature_data('EDULIS_site_temperature.csv')
+    edulis_temperature_list = get_edulis_temperature_data('EDULIS_temperature_data.csv')
 
     # Get EDULIS solid particle matter data
     edulis_spm_list = get_edulis_spm_data('EDULIS_SPM_data.csv')
