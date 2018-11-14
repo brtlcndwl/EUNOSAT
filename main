@@ -49,6 +49,16 @@ class eunosatData:
         plt.show()
 
 
+def get_mussel_data(filename):
+    """ Get mussel growth data (not interpolated) from csv file and returns list """
+    mussel_growth_data = []
+    with open(filename) as csvfile:
+        reader = csv.reader(csvfile, delimiter='\t')
+        for row in reader:
+            mussel_growth_data.append([float(row[0]), float(row[1]), float(row[2])])
+    return mussel_growth_data
+
+
 def get_edulis_temperature_data(filename):
     """ Get temperatures (per day, already interpolated) from temperature csv file and returns list """
     edulis_temperatures = []
@@ -77,7 +87,11 @@ def get_deb_model_constants(filename):
             deb_constants[str(row[0])] = row[1]
     return deb_constants
 
+
 def main():
+    # Get mussel data
+    mussel_growth_data = get_mussel_data('DEB_mussel_growth_data.csv')
+
     # Get EDULIS temperature data
     edulis_temperature_list = get_edulis_temperature_data('EDULIS_temperature_data.csv')
 
